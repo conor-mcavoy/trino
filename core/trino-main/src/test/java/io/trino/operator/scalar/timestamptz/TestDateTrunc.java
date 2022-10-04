@@ -198,4 +198,22 @@ public class TestDateTrunc
         assertThat(assertions.expression("date_trunc('millisecond', TIMESTAMP '2020-05-10 12:34:56.12345678901 Asia/Kathmandu')")).matches("TIMESTAMP '2020-05-10 12:34:56.12300000000 Asia/Kathmandu'");
         assertThat(assertions.expression("date_trunc('millisecond', TIMESTAMP '2020-05-10 12:34:56.123456789012 Asia/Kathmandu')")).matches("TIMESTAMP '2020-05-10 12:34:56.123000000000 Asia/Kathmandu'");
     }
+
+    @Test
+    public void testTimeTruncYear()
+    {
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00 Asia/Kathmandu'");
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56.1 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00.0 Asia/Kathmandu'");
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56.12 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00.00 Asia/Kathmandu'");
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56.123 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00.000 Asia/Kathmandu'");
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56.1234 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00.0000 Asia/Kathmandu'");
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56.12345 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00.00000 Asia/Kathmandu'");
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56.123456 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00.000000 Asia/Kathmandu'");
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56.1234567 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00.0000000 Asia/Kathmandu'");
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56.12345678 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00.00000000 Asia/Kathmandu'");
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56.123456789 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00.000000000 Asia/Kathmandu'");
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56.1234567890 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00.0000000000 Asia/Kathmandu'");
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56.12345678901 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00.00000000000 Asia/Kathmandu'");
+        assertThat(assertions.expression("time_trunc('year', 1, TIMESTAMP '2020-05-10 12:34:56.123456789012 Asia/Kathmandu')")).matches("TIMESTAMP '2020-01-01 00:00:00.000000000000 Asia/Kathmandu'");
+    }
 }

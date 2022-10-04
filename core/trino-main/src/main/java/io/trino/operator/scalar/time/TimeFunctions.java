@@ -101,6 +101,34 @@ public class TimeFunctions
         }
     }
 
+    @Description("Truncate to the specified precision")
+    @ScalarFunction("time_trunc")
+    @LiteralParameters({"x", "p"})
+    @SqlType("time(p)")
+    public static long truncateTime(@SqlType("varchar(x)") Slice unit, @SqlType(StandardTypes.BIGINT) long value, @SqlType("time(p)") long time)
+    {
+        String unitString = unit.toStringUtf8().toLowerCase(ENGLISH);
+        long truncatePicoseconds;
+        switch (unitString) {
+            case "millisecond":
+                truncatePicoseconds = value * PICOSECONDS_PER_MILLISECOND;
+                break;
+            case "second":
+                truncatePicoseconds = value * PICOSECONDS_PER_SECOND;
+                break;
+            case "minute":
+                truncatePicoseconds = value * PICOSECONDS_PER_MINUTE;
+                break;
+            case "hour":
+                truncatePicoseconds = value * PICOSECONDS_PER_HOUR;
+                break;
+            default:
+                throw new TrinoException(INVALID_FUNCTION_ARGUMENT, "'" + unitString + "' is not a valid Time field");
+        }
+
+        return time / truncatePicoseconds * truncatePicoseconds;
+    }
+
     @Description("Add the specified amount of time to the given time")
     @LiteralParameters({"x", "p"})
     @ScalarFunction("date_add")

@@ -264,6 +264,18 @@ public final class DateTimeFunctions
         return MILLISECONDS.toDays(millis);
     }
 
+    @Description("Truncate to the specified precision in the session timezone")
+    @ScalarFunction("time_trunc")
+    @LiteralParameters("x")
+    @SqlType(StandardTypes.DATE)
+    public static long truncateTime(@SqlType("varchar(x)") Slice unit, @SqlType(StandardTypes.BIGINT) long value, @SqlType(StandardTypes.DATE) long date)
+    {
+        DateTimeField dateField = getDateField(UTC_CHRONOLOGY, unit);
+
+        int truncatedValue = toIntExact(dateField.get(date) / value * value);
+        return dateField.roundFloor(dateField.set(date, truncatedValue));
+    }
+
     @Description("Add the specified amount of date to the given date")
     @LiteralParameters("x")
     @ScalarFunction("date_add")
