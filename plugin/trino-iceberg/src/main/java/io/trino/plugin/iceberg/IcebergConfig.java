@@ -72,6 +72,7 @@ public class IcebergConfig
     private double minimumAssignedSplitWeight = 0.05;
     private Optional<String> materializedViewsStorageSchema = Optional.empty();
     private boolean sortedWritingEnabled = true;
+    private long queryMaxRowCount;
 
     public CatalogType getCatalogType()
     {
@@ -351,6 +352,20 @@ public class IcebergConfig
     public IcebergConfig setSortedWritingEnabled(boolean sortedWritingEnabled)
     {
         this.sortedWritingEnabled = sortedWritingEnabled;
+        return this;
+    }
+
+    @Min(0)
+    public long getQueryMaxRowCount()
+    {
+        return queryMaxRowCount;
+    }
+
+    @Config("iceberg.query-max-row-count")
+    @ConfigDescription("The maximum number of rows a query can scan. 0 for unlimited.")
+    public IcebergConfig setQueryMaxRowCount(long queryMaxRowCount)
+    {
+        this.queryMaxRowCount = queryMaxRowCount;
         return this;
     }
 }

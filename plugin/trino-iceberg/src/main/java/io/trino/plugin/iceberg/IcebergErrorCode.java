@@ -39,6 +39,7 @@ public enum IcebergErrorCode
     ICEBERG_COMMIT_ERROR(12, EXTERNAL),
     ICEBERG_CATALOG_ERROR(13, EXTERNAL),
     ICEBERG_WRITER_CLOSE_ERROR(14, EXTERNAL),
+    ICEBERG_QUERY_OVER_TOO_MANY_ROWS_ERROR(15, USER_ERROR),
     /**/;
 
     private final ErrorCode errorCode;

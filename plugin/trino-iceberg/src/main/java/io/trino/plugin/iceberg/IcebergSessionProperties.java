@@ -42,6 +42,7 @@ import static io.trino.spi.session.PropertyMetadata.booleanProperty;
 import static io.trino.spi.session.PropertyMetadata.doubleProperty;
 import static io.trino.spi.session.PropertyMetadata.enumProperty;
 import static io.trino.spi.session.PropertyMetadata.integerProperty;
+import static io.trino.spi.session.PropertyMetadata.longProperty;
 import static io.trino.spi.session.PropertyMetadata.stringProperty;
 import static java.lang.String.format;
 
@@ -83,6 +84,7 @@ public final class IcebergSessionProperties
     public static final String REMOVE_ORPHAN_FILES_MIN_RETENTION = "remove_orphan_files_min_retention";
     private static final String MERGE_MANIFESTS_ON_WRITE = "merge_manifests_on_write";
     private static final String SORTED_WRITING_ENABLED = "sorted_writing_enabled";
+    private static final String QUERY_MAX_ROW_COUNT = "max_row_count_scanned";
 
     private final List<PropertyMetadata<?>> sessionProperties;
 
@@ -289,6 +291,11 @@ public final class IcebergSessionProperties
                         "Enable sorted writing to tables with a specified sort order",
                         icebergConfig.isSortedWritingEnabled(),
                         false))
+                .add(longProperty(
+                        QUERY_MAX_ROW_COUNT,
+                        "The maximum number of rows a query can scan. 0 for unlimited.",
+                        icebergConfig.getQueryMaxRowCount(),
+                        false))
                 .build();
     }
 
@@ -478,5 +485,10 @@ public final class IcebergSessionProperties
     public static boolean isSortedWritingEnabled(ConnectorSession session)
     {
         return session.getProperty(SORTED_WRITING_ENABLED, Boolean.class);
+    }
+
+    public static long getQueryMaxRowCount(ConnectorSession session)
+    {
+        return session.getProperty(QUERY_MAX_ROW_COUNT, Long.class);
     }
 }

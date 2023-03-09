@@ -19,6 +19,7 @@ import com.google.common.collect.AbstractSequentialIterator;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import io.airlift.log.Logger;
+import io.trino.spi.TrinoException;
 import io.trino.spi.connector.ColumnHandle;
 import io.trino.spi.connector.ConnectorSession;
 import io.trino.spi.predicate.TupleDomain;
@@ -57,11 +58,14 @@ import java.util.regex.Pattern;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static io.trino.plugin.iceberg.ExpressionConverter.toIcebergExpression;
+import static io.trino.plugin.iceberg.IcebergErrorCode.ICEBERG_QUERY_OVER_TOO_MANY_ROWS_ERROR;
+import static io.trino.plugin.iceberg.IcebergSessionProperties.getQueryMaxRowCount;
 import static io.trino.plugin.iceberg.IcebergSessionProperties.isExtendedStatisticsEnabled;
 import static io.trino.plugin.iceberg.IcebergUtil.getColumns;
 import static io.trino.spi.type.VarbinaryType.VARBINARY;
 import static io.trino.spi.type.VarcharType.VARCHAR;
 import static java.lang.Long.parseLong;
+import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
@@ -90,13 +94,23 @@ public final class TableStatisticsReader
 
     public static TableStatistics getTableStatistics(TypeManager typeManager, ConnectorSession session, IcebergTableHandle tableHandle, Table icebergTable)
     {
-        return makeTableStatistics(
+        TableStatistics tableStatistics = makeTableStatistics(
                 typeManager,
                 icebergTable,
                 tableHandle.getSnapshotId(),
                 tableHandle.getEnforcedPredicate(),
                 tableHandle.getUnenforcedPredicate(),
                 isExtendedStatisticsEnabled(session));
+
+        long maxRowCount = getQueryMaxRowCount(session);
+        if (maxRowCount != 0 && !tableStatistics.getRowCount().isUnknown() && tableStatistics.getRowCount().getValue() > maxRowCount) {
+            throw new TrinoException(ICEBERG_QUERY_OVER_TOO_MANY_ROWS_ERROR, format(
+                    "Query over table '%s' can potentially read more than %s rows",
+                    icebergTable.name(),
+                    maxRowCount));
+        }
+
+        return tableStatistics;
     }
 
     @VisibleForTesting
